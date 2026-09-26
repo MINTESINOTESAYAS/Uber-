@@ -1,17 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { CURRENCIES, FAM_FUND_THEME } from '../constants';
-import { calculateDriverMetrics } from '../utils/calculator';
-import { getInitialSampleData } from '../utils/sampleData';
+import { CURRENCY, APP_VERSION, PREVIOUS_VERSION } from '../constants.js';
+import { calculateDriverMetrics } from '../utils/calculator.js';
+import { getInitialSampleData } from '../utils/sampleData.js';
 
 const AppContext = createContext(null);
 
 const STORAGE_KEYS = {
-  INCOMES: 'driver_ledger_incomes_v1',
-  EXPENSES: 'driver_ledger_expenses_v1',
-  TARGETS: 'driver_ledger_targets_v1',
-  CURRENCY: 'driver_ledger_currency_v1',
-  THEME: 'driver_ledger_theme_v1',
-  VIEW_MODE: 'driver_ledger_view_mode_v1',
+  INCOMES: 'yango_ledger_incomes_v12',
+  EXPENSES: 'yango_ledger_expenses_v12',
+  TARGETS: 'yango_ledger_targets_v12',
+  THEME: 'yango_ledger_theme_v12',
+  VERSION: 'yango_ledger_active_version_v12',
 };
 
 export function AppProvider({ children }) {
@@ -37,7 +36,7 @@ export function AppProvider({ children }) {
     }
   });
 
-  // Targets state
+  // Targets state (in ETB)
   const [targets, setTargets] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.TARGETS);
@@ -47,47 +46,40 @@ export function AppProvider({ children }) {
     }
   });
 
-  // Currency state
-  const [currency, setCurrency] = useState(() => {
+  // Version: 1.2 (Active) vs 1.1 (Legacy)
+  const [activeVersion, setActiveVersion] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.CURRENCY);
-      return saved ? JSON.parse(saved) : CURRENCIES[0];
+      const saved = localStorage.getItem(STORAGE_KEYS.VERSION);
+      return saved || APP_VERSION;
     } catch {
-      return CURRENCIES[0];
+      return APP_VERSION;
     }
   });
 
-  // Theme state: 'fam-fund' (default light/mint), 'dark' (slate navy), 'noir' (uber dark)
+  // Strict currency is ETB
+  const currency = CURRENCY;
+
+  // Theme: 'dark' (sleek dashboard cockpit) or 'light'
   const [theme, setTheme] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-      return saved || 'fam-fund';
+      return saved || 'dark';
     } catch {
-      return 'fam-fund';
-    }
-  });
-
-  // View mode: 'mobile' (phone container on desktop) vs 'responsive' (full width)
-  const [viewMode, setViewMode] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.VIEW_MODE);
-      return saved || 'mobile';
-    } catch {
-      return 'mobile';
+      return 'dark';
     }
   });
 
   // Navigation & Modals
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard', 'analytics', 'history', 'export'
-  const [activeModal, setActiveModal] = useState(null); // 'addIncome', 'addExpense', 'targetSettings', 'exportExcel', 'figmaSync', 'editTransaction'
-  const [editingItem, setEditingItem] = useState(null); // { type: 'income' | 'expense', item }
+  const [activeTab, setActiveTab] = useState('home'); // 'home', 'details', 'ledger', 'excel'
+  const [activeModal, setActiveModal] = useState(null); // 'addIncome', 'addExpense', 'targetSettings', 'exportExcel', 'editTransaction', 'versionInfo'
+  const [editingItem, setEditingItem] = useState(null);
 
   // Sync to localStorage
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEYS.INCOMES, JSON.stringify(incomes));
     } catch (e) {
-      console.warn('Storage quota error', e);
+      console.warn('Storage quota', e);
     }
   }, [incomes]);
 
@@ -95,7 +87,7 @@ export function AppProvider({ children }) {
     try {
       localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
     } catch (e) {
-      console.warn('Storage quota error', e);
+      console.warn('Storage quota', e);
     }
   }, [expenses]);
 
@@ -103,35 +95,27 @@ export function AppProvider({ children }) {
     try {
       localStorage.setItem(STORAGE_KEYS.TARGETS, JSON.stringify(targets));
     } catch (e) {
-      console.warn('Storage quota error', e);
+      console.warn('Storage quota', e);
     }
   }, [targets]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEYS.CURRENCY, JSON.stringify(currency));
-    } catch (e) {
-      console.warn('Storage quota error', e);
-    }
-  }, [currency]);
-
-  useEffect(() => {
-    try {
       localStorage.setItem(STORAGE_KEYS.THEME, theme);
     } catch (e) {
-      console.warn('Storage quota error', e);
+      console.warn('Storage quota', e);
     }
   }, [theme]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEYS.VIEW_MODE, viewMode);
+      localStorage.setItem(STORAGE_KEYS.VERSION, activeVersion);
     } catch (e) {
-      console.warn('Storage quota error', e);
+      console.warn('Storage quota', e);
     }
-  }, [viewMode]);
+  }, [activeVersion]);
 
-  // Recalculate metrics reactively
+  // Recalculate metrics
   const metrics = useMemo(() => {
     return calculateDriverMetrics({
       incomes,
@@ -141,7 +125,7 @@ export function AppProvider({ children }) {
     });
   }, [incomes, expenses, targets]);
 
-  // Income Operations
+  // CRUD Operations
   const addIncome = (entry) => {
     const newItem = {
       ...entry,
@@ -159,7 +143,6 @@ export function AppProvider({ children }) {
     setIncomes(prev => prev.filter(item => item.id !== id));
   };
 
-  // Expense Operations
   const addExpense = (entry) => {
     const newItem = {
       ...entry,
@@ -177,12 +160,10 @@ export function AppProvider({ children }) {
     setExpenses(prev => prev.filter(item => item.id !== id));
   };
 
-  // Target operations
   const updateTargets = (newTargets) => {
     setTargets(prev => ({ ...prev, ...newTargets }));
   };
 
-  // Reset to initial demo data
   const resetToSampleData = () => {
     const fresh = getInitialSampleData();
     setIncomes(fresh.incomes);
@@ -190,18 +171,15 @@ export function AppProvider({ children }) {
     setTargets(fresh.defaultTargets);
   };
 
-  // Clear data
   const clearAllData = () => {
     setIncomes([]);
     setExpenses([]);
   };
 
-  // Restore from JSON backup
   const importFullBackup = (data) => {
     if (data.incomes && Array.isArray(data.incomes)) setIncomes(data.incomes);
     if (data.expenses && Array.isArray(data.expenses)) setExpenses(data.expenses);
     if (data.targets) setTargets(data.targets);
-    if (data.currency) setCurrency(data.currency);
   };
 
   const openEditModal = (item, type) => {
@@ -215,14 +193,13 @@ export function AppProvider({ children }) {
     targets,
     currency,
     theme,
-    viewMode,
+    activeVersion,
     activeTab,
     activeModal,
     editingItem,
     metrics,
-    setCurrency,
     setTheme,
-    setViewMode,
+    setActiveVersion,
     setActiveTab,
     setActiveModal,
     openEditModal,

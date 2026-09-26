@@ -1,4 +1,4 @@
-// Calculation engine for Driver Targets, Incomes, Expenses, and Projections
+// Driver Ledger Calculation Engine - ETB & Target Performance
 
 export function formatDateISO(date = new Date()) {
   const d = new Date(date);
@@ -8,23 +8,20 @@ export function formatDateISO(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
-export function formatCurrency(amount = 0, currency = { symbol: '$', position: 'prefix' }) {
+export function formatCurrency(amount = 0, currency = { symbol: 'Br ', position: 'prefix' }) {
   const val = Number(amount) || 0;
-  const formatted = Math.abs(val).toLocaleString(undefined, {
+  const formatted = Math.abs(val).toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  const prefix = val < 0 ? '-' : '';
-  if (currency.position === 'suffix') {
-    return `${prefix}${formatted} ${currency.symbol.trim()}`;
-  }
-  return `${prefix}${currency.symbol}${formatted}`;
+  const sign = val < 0 ? '-' : '';
+  const sym = currency?.symbol || 'Br ';
+  return `${sign}${sym}${formatted}`;
 }
 
 export function getWeekStartAndEnd(d = new Date()) {
   const date = new Date(d);
   const day = date.getDay(); // 0 is Sunday, 1 is Monday...
-  // Set Monday as day 0
   const diffToMonday = date.getDate() - day + (day === 0 ? -6 : 1);
   const start = new Date(date.setDate(diffToMonday));
   start.setHours(0, 0, 0, 0);
@@ -47,10 +44,10 @@ export function calculateDriverMetrics({
   incomes = [],
   expenses = [],
   targets = {
-    monthlyIncome: 4000,
-    monthlyExpenseBudget: 1000,
-    workingDaysPerWeek: 5,
-    workingDaysMap: { mon: true, tue: true, wed: true, thu: true, fri: true, sat: false, sun: false },
+    monthlyIncome: 95000,
+    monthlyExpenseBudget: 24000,
+    workingDaysPerWeek: 6,
+    workingDaysMap: { mon: true, tue: true, wed: true, thu: true, fri: true, sat: true, sun: false },
     autoAdjustPace: true,
   },
   referenceDate = new Date(),
@@ -60,19 +57,18 @@ export function calculateDriverMetrics({
   const { start: monthStart, end: monthEnd } = getMonthStartAndEnd(referenceDate);
 
   const daysInCurrentMonth = monthEnd.getDate();
-  const weeksInMonth = daysInCurrentMonth / 7;
 
-  // Standard Target splits
-  const monthlyIncomeTarget = Number(targets.monthlyIncome) || 4000;
-  const monthlyExpenseBudget = Number(targets.monthlyExpenseBudget) || 1000;
+  // Targets
+  const monthlyIncomeTarget = Number(targets.monthlyIncome) || 95000;
+  const monthlyExpenseBudget = Number(targets.monthlyExpenseBudget) || 24000;
   const weeklyIncomeTarget = monthlyIncomeTarget / 4.333333;
   const weeklyExpenseBudget = monthlyExpenseBudget / 4.333333;
 
-  const workingDaysCount = Object.values(targets.workingDaysMap || {}).filter(Boolean).length || targets.workingDaysPerWeek || 5;
-  const standardDailyIncomeTarget = weeklyIncomeTarget / workingDaysCount;
+  const workingDaysCount = Object.values(targets.workingDaysMap || {}).filter(Boolean).length || targets.workingDaysPerWeek || 6;
+  const standardDailyIncomeTarget = weeklyIncomeTarget / Math.max(1, workingDaysCount);
   const standardDailyExpenseBudget = monthlyExpenseBudget / daysInCurrentMonth;
 
-  // Filter incomes
+  // Filters
   const todayIncomes = incomes.filter(i => i.date === todayStr);
   const weekIncomes = incomes.filter(i => {
     const d = new Date(i.date + 'T12:00:00');
@@ -83,7 +79,6 @@ export function calculateDriverMetrics({
     return d >= monthStart && d <= monthEnd;
   });
 
-  // Filter expenses
   const todayExpenses = expenses.filter(e => e.date === todayStr);
   const weekExpenses = expenses.filter(e => {
     const d = new Date(e.date + 'T12:00:00');
@@ -94,7 +89,7 @@ export function calculateDriverMetrics({
     return d >= monthStart && d <= monthEnd;
   });
 
-  // Helper totals
+  // Sum helpers
   const sumIncome = (list) => list.reduce((acc, curr) => {
     const total = (Number(curr.grossAmount) || 0) + (Number(curr.tips) || 0) + (Number(curr.bonus) || 0);
     return acc + total;
@@ -131,18 +126,16 @@ export function calculateDriverMetrics({
   const monthTargetProgress = monthlyIncomeTarget > 0 ? (monthIncomeTotal / monthlyIncomeTarget) * 100 : 0;
   const monthVariance = monthIncomeTotal - monthlyIncomeTarget;
 
-  // Projected Month Earnings
+  // Projections
   const currentDayOfMonth = referenceDate.getDate();
   const avgDailyIncomeSoFar = currentDayOfMonth > 0 ? (monthIncomeTotal / currentDayOfMonth) : 0;
   const projectedMonthIncome = avgDailyIncomeSoFar * daysInCurrentMonth;
   const projectedMonthNet = (avgDailyIncomeSoFar - (monthExpenseTotal / Math.max(1, currentDayOfMonth))) * daysInCurrentMonth;
 
   // Dynamic Weekly Rebalancer (Smart Pace)
-  // Calculates what the driver needs to make each remaining planned working day this week
   const todayDayIndex = referenceDate.getDay(); // 0 is Sun, 1 is Mon...
   const dayKeyMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
   
-  // Count remaining planned working days this week including today if target not met
   let remainingWorkingDaysThisWeek = 0;
   for (let i = todayDayIndex; i <= 6; i++) {
     const key = dayKeyMap[i];
@@ -187,10 +180,10 @@ export function calculateDriverMetrics({
     });
   }
 
-  // Expense breakdown by category
+  // Expense breakdown
   const expenseByCategory = {};
   monthExpenses.forEach(exp => {
-    const cat = exp.category || 'misc';
+    const cat = exp.category || 'other_expense';
     expenseByCategory[cat] = (expenseByCategory[cat] || 0) + (Number(exp.amount) || 0);
   });
 
@@ -199,28 +192,6 @@ export function calculateDriverMetrics({
     amount,
     percentage: monthExpenseTotal > 0 ? (amount / monthExpenseTotal) * 100 : 0,
   })).sort((a, b) => b.amount - a.amount);
-
-  // Income by platform breakdown
-  const incomeByPlatform = {};
-  monthIncomes.forEach(inc => {
-    const plat = inc.platform || 'uber';
-    const total = (Number(inc.grossAmount) || 0) + (Number(inc.tips) || 0) + (Number(inc.bonus) || 0);
-    incomeByPlatform[plat] = (incomeByPlatform[plat] || 0) + total;
-  });
-
-  const incomePlatformList = Object.entries(incomeByPlatform).map(([platformId, amount]) => ({
-    platformId,
-    amount,
-    percentage: monthIncomeTotal > 0 ? (amount / monthIncomeTotal) * 100 : 0,
-  })).sort((a, b) => b.amount - a.amount);
-
-  // Hourly and trip rates
-  const todayNetHourly = todayHours > 0 ? (todayNet / todayHours) : 0;
-  const weekNetHourly = weekHours > 0 ? (weekNet / weekHours) : 0;
-  const monthNetHourly = monthHours > 0 ? (monthNet / monthHours) : 0;
-
-  const monthExpenseRatio = monthIncomeTotal > 0 ? (monthExpenseTotal / monthIncomeTotal) * 100 : 0;
-  const targetExpenseRatio = monthlyIncomeTarget > 0 ? (monthlyExpenseBudget / monthlyIncomeTarget) * 100 : 25;
 
   return {
     today: {
@@ -234,7 +205,6 @@ export function calculateDriverMetrics({
       variance: todayVariance,
       hours: todayHours,
       trips: todayTrips,
-      netHourly: todayNetHourly,
       isWorkingDay: targets.workingDaysMap ? targets.workingDaysMap[dayKeyMap[todayDayIndex]] : true,
     },
     week: {
@@ -247,7 +217,6 @@ export function calculateDriverMetrics({
       variance: weekVariance,
       hours: weekHours,
       trips: weekTrips,
-      netHourly: weekNetHourly,
       daysBreakdown: weekDaysBreakdown,
       dynamicDailyTarget: dynamicDailyTargetThisWeek,
       remainingWorkingDays: remainingWorkingDaysThisWeek,
@@ -263,13 +232,9 @@ export function calculateDriverMetrics({
       variance: monthVariance,
       hours: monthHours,
       trips: monthTrips,
-      netHourly: monthNetHourly,
       projectedIncome: projectedMonthIncome,
       projectedNet: projectedMonthNet,
-      expenseRatio: monthExpenseRatio,
-      targetExpenseRatio,
       expenseBreakdown: expenseBreakdownList,
-      incomePlatformBreakdown: incomePlatformList,
     },
     standards: {
       dailyTarget: standardDailyIncomeTarget,

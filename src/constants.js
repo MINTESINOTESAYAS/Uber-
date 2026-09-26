@@ -1,46 +1,43 @@
-// Currency and Category Constants
+// Constants - Driver Ledger v1.2
 
-export const CURRENCIES = [
-  { code: 'USD', symbol: '$', name: 'US Dollar', position: 'prefix' },
-  { code: 'ETB', symbol: 'Br ', name: 'Ethiopian Birr', position: 'prefix' },
-  { code: 'EUR', symbol: '€', name: 'Euro', position: 'prefix' },
-  { code: 'GBP', symbol: '£', name: 'British Pound', position: 'prefix' },
-  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar', position: 'prefix' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar', position: 'prefix' },
-  { code: 'AED', symbol: 'AED ', name: 'UAE Dirham', position: 'prefix' },
-  { code: 'SAR', symbol: 'SAR ', name: 'Saudi Riyal', position: 'prefix' },
-  { code: 'KES', symbol: 'KSh ', name: 'Kenyan Shilling', position: 'prefix' },
-];
+export const APP_VERSION = '1.2';
+export const PREVIOUS_VERSION = '1.1';
 
+// Strict Single Currency: ETB (Ethiopian Birr)
+export const CURRENCY = {
+  code: 'ETB',
+  symbol: 'Br ',
+  name: 'Ethiopian Birr',
+  position: 'prefix'
+};
+
+// Strict Single Ride Type: Yango Ride only
 export const INCOME_PLATFORMS = [
-  { id: 'uber', name: 'Uber Rides', color: '#000000', bg: 'bg-black text-white', icon: 'car' },
-  { id: 'uber_eats', name: 'Uber Eats', color: '#06C167', bg: 'bg-emerald-600 text-white', icon: 'utensils' },
-  { id: 'lyft', name: 'Lyft', color: '#FF00BF', bg: 'bg-pink-600 text-white', icon: 'car' },
-  { id: 'bolt', name: 'Bolt', color: '#34D186', bg: 'bg-teal-600 text-white', icon: 'zap' },
-  { id: 'delivery', name: 'DoorDash / Courier', color: '#FF3008', bg: 'bg-red-500 text-white', icon: 'package' },
-  { id: 'private', name: 'Private Airport / Direct', color: '#6366F1', bg: 'bg-indigo-600 text-white', icon: 'briefcase' },
-  { id: 'taxi', name: 'Street Hail / Taxi', color: '#F59E0B', bg: 'bg-amber-500 text-white', icon: 'navigation' },
-  { id: 'other_income', name: 'Other Income', color: '#64748B', bg: 'bg-slate-600 text-white', icon: 'plus-circle' },
+  { 
+    id: 'yango', 
+    name: 'Yango Ride', 
+    color: '#FF0000', 
+    bg: 'bg-red-600 text-white', 
+    icon: 'car' 
+  }
 ];
 
-export const EXPENSE_CATEGORIES = [
-  { id: 'fuel', name: 'Fuel / Gas / EV Charging', color: '#EF4444', icon: 'fuel', defaultPercent: 40 },
-  { id: 'maintenance', name: 'Vehicle Maintenance & Repairs', color: '#F97316', icon: 'wrench', defaultPercent: 20 },
-  { id: 'carwash', name: 'Car Wash & Detailing', color: '#06B6D4', icon: 'sparkles', defaultPercent: 5 },
-  { id: 'tolls_parking', name: 'Tolls & Parking', color: '#8B5CF6', icon: 'credit-card', defaultPercent: 10 },
-  { id: 'insurance_lease', name: 'Insurance & Car Payment', color: '#3B82F6', icon: 'shield-check', defaultPercent: 15 },
-  { id: 'food_drink', name: 'Shift Meals & Coffee', color: '#EC4899', icon: 'coffee', defaultPercent: 5 },
-  { id: 'phone_data', name: 'Phone Bill & Mobile Data', color: '#14B8A6', icon: 'smartphone', defaultPercent: 3 },
-  { id: 'licensing', name: 'Permits, Taxes & Licensing', color: '#64748B', icon: 'file-text', defaultPercent: 2 },
-  { id: 'misc', name: 'Miscellaneous Expense', color: '#94A3B8', icon: 'tag', defaultPercent: 0 },
-];
-
+// Strict Payment Methods: CBE, Telebirr, and Cash only
 export const PAYMENT_METHODS = [
-  'Cash',
-  'Debit Card',
-  'Credit Card',
-  'Uber Pro Card',
-  'Mobile Money / Bank Transfer',
+  'CBE',
+  'Telebirr',
+  'Cash'
+];
+
+// Operating Expense Categories tailored for Yango Drivers
+export const EXPENSE_CATEGORIES = [
+  { id: 'fuel', name: 'Fuel / Benzene / Nafta', color: '#EF4444', icon: 'fuel', defaultPercent: 45 },
+  { id: 'maintenance', name: 'Maintenance & Service', color: '#F97316', icon: 'wrench', defaultPercent: 20 },
+  { id: 'carwash', name: 'Car Wash', color: '#06B6D4', icon: 'sparkles', defaultPercent: 5 },
+  { id: 'parking_tolls', name: 'Parking & Road Fees', color: '#8B5CF6', icon: 'parking', defaultPercent: 5 },
+  { id: 'food_coffee', name: 'Food & Coffee (Buna)', color: '#EC4899', icon: 'coffee', defaultPercent: 10 },
+  { id: 'telecom_data', name: 'Telebirr / Mobile Internet', color: '#10B981', icon: 'smartphone', defaultPercent: 5 },
+  { id: 'other_expense', name: 'Other Vehicle Expense', color: '#64748B', icon: 'tag', defaultPercent: 10 },
 ];
 
 export const DAYS_OF_WEEK = [
@@ -53,42 +50,27 @@ export const DAYS_OF_WEEK = [
   { key: 'sun', label: 'Sun', full: 'Sunday' },
 ];
 
-// Fam Fund Design System Tokens
-export const FAM_FUND_THEME = {
-  emerald: {
-    primary: '#10B981',
-    primaryDark: '#059669',
-    accent: '#34D399',
-    surface: '#F8FAFC',
-    card: '#FFFFFF',
-    textMain: '#0F172A',
-    textMuted: '#64748B',
-    border: '#E2E8F0',
-    incomeGreen: '#10B981',
-    expenseRed: '#EF4444',
+// Version Changelog / History
+export const VERSION_DETAILS = {
+  '1.2': {
+    title: 'Version 1.2 (Active Edition)',
+    features: [
+      'Car Speedometer Circular Target Gauge',
+      'Ultra-Simplistic Clean Minimal Dashboard',
+      'Strict ETB (Ethiopian Birr) Currency Only',
+      'Strict Yango Ride Platform Only',
+      'Strict CBE, Telebirr & Cash Payment Choices',
+      'Past Date Logging (Add income/expense for any missed prior days)',
+      'Organized Sub-screen for deep analytics & trends',
+    ]
   },
-  dark: {
-    primary: '#10B981',
-    primaryDark: '#059669',
-    accent: '#34D399',
-    surface: '#0B1120',
-    card: '#1E293B',
-    textMain: '#F8FAFC',
-    textMuted: '#94A3B8',
-    border: '#334155',
-    incomeGreen: '#34D399',
-    expenseRed: '#F87171',
-  },
-  noir: {
-    primary: '#000000',
-    primaryDark: '#1E1E1E',
-    accent: '#22C55E',
-    surface: '#000000',
-    card: '#121212',
-    textMain: '#FFFFFF',
-    textMuted: '#A1A1AA',
-    border: '#27272A',
-    incomeGreen: '#22C55E',
-    expenseRed: '#EF4444',
+  '1.1': {
+    title: 'Version 1.1 (Initial Fam Fund Edition)',
+    features: [
+      'Multi-currency and multi-platform support',
+      'Fam Fund card-based balance dashboard',
+      'Initial 4-sheet Excel export system',
+      'Standard calendar view',
+    ]
   }
 };

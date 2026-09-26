@@ -1,13 +1,13 @@
 import * as XLSX from 'xlsx';
 import { Share } from '@capacitor/share';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 export function generateExcelWorkbook({
   incomes = [],
   expenses = [],
   targets = {},
   metrics = {},
-  currency = { symbol: '$', code: 'USD' },
+  currency = { symbol: 'Br ', code: 'ETB' },
   periodName = 'All Time',
 }) {
   const wb = XLSX.utils.book_new();
@@ -16,59 +16,57 @@ export function generateExcelWorkbook({
   // SHEET 1: EXECUTIVE SUMMARY & TARGET COMPARISON
   // ----------------------------------------------------
   const summaryData = [
-    ['DRIVER INCOME, EXPENSE & TARGET PERFORMANCE REPORT'],
+    ['YANGO DRIVER INCOME, EXPENSE & TARGET PLAN REPORT (v1.2)'],
     [`Generated: ${new Date().toLocaleString()}`],
-    [`Currency: ${currency.code} (${currency.symbol})`],
+    [`Currency: Ethiopian Birr (ETB / Br)`],
+    [`Service: Yango Ride`],
     [`Reporting Period: ${periodName}`],
     [],
     ['1. TARGET VS ACTUAL COMPARISON'],
-    ['Metric', 'Planned Target', 'Actual Achieved', 'Variance (+/-)', 'Achievement %'],
+    ['Metric', 'Planned Target (ETB)', 'Actual Achieved (ETB)', 'Variance (+/-)', 'Achievement %'],
     [
-      'Daily Income (Today)',
+      'Daily Target (Today)',
       metrics.today?.target ? metrics.today.target.toFixed(2) : '0.00',
       metrics.today?.income ? metrics.today.income.toFixed(2) : '0.00',
       metrics.today?.variance ? metrics.today.variance.toFixed(2) : '0.00',
       `${(metrics.today?.progress || 0).toFixed(1)}%`
     ],
     [
-      'Weekly Income (This Week)',
+      'Weekly Target (This Week)',
       metrics.week?.target ? metrics.week.target.toFixed(2) : '0.00',
       metrics.week?.income ? metrics.week.income.toFixed(2) : '0.00',
       metrics.week?.variance ? metrics.week.variance.toFixed(2) : '0.00',
       `${(metrics.week?.progress || 0).toFixed(1)}%`
     ],
     [
-      'Monthly Income (This Month)',
+      'Monthly Target (This Month)',
       metrics.month?.target ? metrics.month.target.toFixed(2) : '0.00',
       metrics.month?.income ? metrics.month.income.toFixed(2) : '0.00',
       metrics.month?.variance ? metrics.month.variance.toFixed(2) : '0.00',
       `${(metrics.month?.progress || 0).toFixed(1)}%`
     ],
     [],
-    ['2. FINANCIAL OVERVIEW (MONTH-TO-DATE)'],
-    ['Total Gross Revenue', metrics.month?.income ? metrics.month.income.toFixed(2) : '0.00'],
+    ['2. FINANCIAL SUMMARY (MONTH-TO-DATE)'],
+    ['Total Yango Gross Revenue', metrics.month?.income ? metrics.month.income.toFixed(2) : '0.00'],
     ['Total Operating Expenses', metrics.month?.expense ? metrics.month.expense.toFixed(2) : '0.00'],
     ['Net Take-Home Profit', metrics.month?.net ? metrics.month.net.toFixed(2) : '0.00'],
-    ['Expense-to-Income Ratio', `${(metrics.month?.expenseRatio || 0).toFixed(1)}%`],
-    ['Target Expense Ceiling', `${(metrics.month?.targetExpenseRatio || 25).toFixed(1)}%`],
+    ['Total Completed Yango Trips', metrics.month?.trips || 0],
     ['Total Driving Hours', metrics.month?.hours || 0],
-    ['Total Completed Trips', metrics.month?.trips || 0],
-    ['Net Hourly Earnings', `${currency.symbol}${(metrics.month?.netHourly || 0).toFixed(2)} / hr`],
     ['Projected Month-End Income', `${currency.symbol}${(metrics.month?.projectedIncome || 0).toFixed(2)}`],
     [],
-    ['3. TARGET PLAN CONFIGURATION'],
-    ['Monthly Target Goal', targets.monthlyIncome || 4000],
-    ['Monthly Expense Budget', targets.monthlyExpenseBudget || 1000],
-    ['Planned Working Days Per Week', targets.workingDaysPerWeek || 5],
-    ['Standard Daily Milestone', metrics.standards?.dailyTarget ? metrics.standards.dailyTarget.toFixed(2) : '0.00'],
-    ['Standard Weekly Milestone', metrics.standards?.weeklyTarget ? metrics.standards.weeklyTarget.toFixed(2) : '0.00'],
+    ['3. PLAN CONFIGURATION'],
+    ['Monthly Goal Target', targets.monthlyIncome || 95000],
+    ['Monthly Expense Budget', targets.monthlyExpenseBudget || 24000],
+    ['Planned Driving Days Per Week', targets.workingDaysPerWeek || 6],
+    ['Daily Milestone', metrics.standards?.dailyTarget ? metrics.standards.dailyTarget.toFixed(2) : '0.00'],
+    ['Weekly Milestone', metrics.standards?.weeklyTarget ? metrics.standards.weeklyTarget.toFixed(2) : '0.00'],
   ];
 
   const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
   wsSummary['!cols'] = [
     { wch: 32 },
-    { wch: 20 },
-    { wch: 20 },
+    { wch: 22 },
+    { wch: 22 },
     { wch: 18 },
     { wch: 18 },
   ];
@@ -77,7 +75,6 @@ export function generateExcelWorkbook({
   // ----------------------------------------------------
   // SHEET 2: DAILY LEDGER & TARGETS
   // ----------------------------------------------------
-  // Group all unique dates from income & expense
   const datesSet = new Set([
     ...incomes.map(i => i.date),
     ...expenses.map(e => e.date),
@@ -85,11 +82,11 @@ export function generateExcelWorkbook({
   const sortedDates = Array.from(datesSet).sort((a, b) => b.localeCompare(a));
 
   const dailyLedgerRows = [
-    ['Date', 'Day of Week', 'Gross Income', 'Operating Expenses', 'Net Profit', 'Daily Target', 'Target Variance', 'Target Status', 'Trips', 'Hours Worked', 'Hourly Rate']
+    ['Date', 'Day', 'Gross Income (ETB)', 'Expenses (ETB)', 'Net Profit (ETB)', 'Daily Target (ETB)', 'Variance', 'Target Status', 'Trips', 'Hours']
   ];
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const dailyTargetStandard = metrics.standards?.dailyTarget || 180;
+  const dailyTargetStandard = metrics.standards?.dailyTarget || 3650;
 
   sortedDates.forEach(dateStr => {
     const dayIncs = incomes.filter(i => i.date === dateStr);
@@ -100,7 +97,6 @@ export function generateExcelWorkbook({
     const netTotal = incTotal - expTotal;
     const hoursTotal = dayIncs.reduce((acc, c) => acc + (Number(c.hours) || 0), 0);
     const tripsTotal = dayIncs.reduce((acc, c) => acc + (Number(c.trips) || 0), 0);
-    const hourly = hoursTotal > 0 ? (netTotal / hoursTotal).toFixed(2) : '0.00';
 
     const d = new Date(dateStr + 'T12:00:00');
     const dayName = dayNames[d.getDay()];
@@ -117,32 +113,30 @@ export function generateExcelWorkbook({
       variance >= 0 ? `+${variance.toFixed(2)}` : variance.toFixed(2),
       status,
       tripsTotal,
-      hoursTotal,
-      `${currency.symbol}${hourly}/hr`
+      hoursTotal
     ]);
   });
 
   const wsDaily = XLSX.utils.aoa_to_sheet(dailyLedgerRows);
   wsDaily['!cols'] = [
     { wch: 14 },
-    { wch: 12 },
-    { wch: 16 },
+    { wch: 10 },
+    { wch: 20 },
+    { wch: 18 },
+    { wch: 18 },
     { wch: 18 },
     { wch: 16 },
     { wch: 16 },
-    { wch: 16 },
-    { wch: 16 },
     { wch: 10 },
-    { wch: 14 },
-    { wch: 16 }
+    { wch: 10 }
   ];
   XLSX.utils.book_append_sheet(wb, wsDaily, 'Daily Ledger');
 
   // ----------------------------------------------------
-  // SHEET 3: DETAILED INCOME LOG
+  // SHEET 3: INCOME LOG DETAILS
   // ----------------------------------------------------
   const incomeRows = [
-    ['Entry ID', 'Date', 'Platform / Source', 'Base / Gross Fare', 'Tips', 'Bonuses / Incentives', 'Total Earnings', 'Completed Trips', 'Driving Hours', 'Notes / Shifts']
+    ['Entry ID', 'Date', 'Ride Platform', 'Gross Fares (ETB)', 'Tips (ETB)', 'Bonus / Quests (ETB)', 'Total Income (ETB)', 'Trips', 'Hours', 'Trip Route / Notes']
   ];
 
   incomes.sort((a, b) => b.date.localeCompare(a.date)).forEach(inc => {
@@ -154,7 +148,7 @@ export function generateExcelWorkbook({
     incomeRows.push([
       inc.id || 'N/A',
       inc.date,
-      inc.platform?.toUpperCase() || 'UBER',
+      'YANGO RIDE',
       gross.toFixed(2),
       tips.toFixed(2),
       bonus.toFixed(2),
@@ -169,22 +163,22 @@ export function generateExcelWorkbook({
   wsIncome['!cols'] = [
     { wch: 14 },
     { wch: 14 },
-    { wch: 20 },
+    { wch: 16 },
     { wch: 18 },
     { wch: 14 },
     { wch: 20 },
     { wch: 18 },
-    { wch: 16 },
-    { wch: 16 },
-    { wch: 30 }
+    { wch: 10 },
+    { wch: 10 },
+    { wch: 36 }
   ];
   XLSX.utils.book_append_sheet(wb, wsIncome, 'Income Log');
 
   // ----------------------------------------------------
-  // SHEET 4: DETAILED EXPENSE LOG
+  // SHEET 4: EXPENSE LOG DETAILS
   // ----------------------------------------------------
   const expenseRows = [
-    ['Entry ID', 'Date', 'Expense Category', 'Amount Paid', 'Payment Method', 'Odometer / Mileage', 'Receipt Notes / Description']
+    ['Entry ID', 'Date', 'Category', 'Amount (ETB)', 'Payment Method (CBE/Telebirr/Cash)', 'Mileage / Odometer', 'Receipt Notes']
   ];
 
   expenses.sort((a, b) => b.date.localeCompare(a.date)).forEach(exp => {
@@ -194,7 +188,7 @@ export function generateExcelWorkbook({
       exp.category?.toUpperCase() || 'GENERAL',
       (Number(exp.amount) || 0).toFixed(2),
       exp.paymentMethod || 'Cash',
-      exp.mileage ? `${exp.mileage} mi/km` : '-',
+      exp.mileage || '-',
       exp.notes || ''
     ]);
   });
@@ -203,9 +197,9 @@ export function generateExcelWorkbook({
   wsExpense['!cols'] = [
     { wch: 14 },
     { wch: 14 },
-    { wch: 26 },
+    { wch: 24 },
     { wch: 16 },
-    { wch: 20 },
+    { wch: 32 },
     { wch: 20 },
     { wch: 36 }
   ];
@@ -214,17 +208,13 @@ export function generateExcelWorkbook({
   return wb;
 }
 
-// Download workbook in browser
-export function downloadExcelFile(wb, filename = `Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export function downloadExcelFile(wb, filename = `Yango_Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   XLSX.writeFile(wb, filename);
 }
 
-// Mobile-native share integration
-export async function shareExcelFile(wb, filename = `Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   try {
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
-    
-    // Check if running on mobile device with Capacitor Filesystem
     try {
       const saved = await Filesystem.writeFile({
         path: filename,
@@ -233,26 +223,14 @@ export async function shareExcelFile(wb, filename = `Driver_Ledger_${new Date().
       });
 
       await Share.share({
-        title: 'Driver Income & Expense Ledger Backup',
-        text: 'Driver income, expenses, and target plan performance report.',
+        title: 'Yango Driver Ledger Backup',
+        text: 'Daily income, expenses, and target plan performance report in ETB.',
         url: saved.uri,
-        dialogTitle: 'Share Driver Ledger Excel Sheet',
+        dialogTitle: 'Share Yango Driver Excel Sheet',
       });
       return { success: true };
-    } catch (e) {
-      // Fallback to browser download or Web Share
+    } catch {
       const blob = new Blob([s2ab(atob(wbout))], { type: 'application/octet-stream' });
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })] })) {
-        const file = new File([blob], filename, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        await navigator.share({
-          files: [file],
-          title: 'Driver Income & Expense Backup',
-          text: 'Driver Ledger backup Excel file',
-        });
-        return { success: true };
-      }
-      
-      // Standard browser download
       downloadExcelFile(wb, filename);
       return { success: true, method: 'download' };
     }

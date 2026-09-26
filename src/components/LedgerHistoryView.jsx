@@ -1,19 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { formatCurrency } from '../utils/calculator';
-import { INCOME_PLATFORMS, EXPENSE_CATEGORIES } from '../constants';
+import { formatCurrency } from '../utils/calculator.js';
+import { EXPENSE_CATEGORIES } from '../constants.js';
 import { 
   Search, 
-  Filter, 
   ArrowUpRight, 
   ArrowDownRight, 
+  Calendar, 
   Car, 
   Fuel, 
-  Trash2, 
-  Edit3, 
-  Plus, 
-  Calendar,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Plus
 } from 'lucide-react';
 
 export default function LedgerHistoryView() {
@@ -21,17 +18,13 @@ export default function LedgerHistoryView() {
     incomes, 
     expenses, 
     currency, 
-    theme, 
     openEditModal, 
     setActiveModal 
   } = useApp();
 
-  const isDark = theme === 'dark' || theme === 'noir';
-
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all'); // 'all', 'income', 'expense'
+  const [filterType, setFilterType] = useState('all');
 
-  // Combine and sort
   const combined = useMemo(() => {
     const list = [
       ...incomes.map(i => ({
@@ -49,7 +42,6 @@ export default function LedgerHistoryView() {
     return list.sort((a, b) => b.date.localeCompare(a.date));
   }, [incomes, expenses]);
 
-  // Filtered
   const filtered = useMemo(() => {
     return combined.filter(item => {
       if (filterType === 'income' && item.type !== 'income') return false;
@@ -60,13 +52,12 @@ export default function LedgerHistoryView() {
       const notes = (item.notes || '').toLowerCase();
       const date = (item.date || '').toLowerCase();
       const category = (item.category || '').toLowerCase();
-      const platform = (item.platform || '').toLowerCase();
+      const pm = (item.paymentMethod || '').toLowerCase();
 
-      return notes.includes(term) || date.includes(term) || category.includes(term) || platform.includes(term);
+      return notes.includes(term) || date.includes(term) || category.includes(term) || pm.includes(term);
     });
   }, [combined, filterType, searchTerm]);
 
-  // Group by date
   const groupedByDate = useMemo(() => {
     const groups = {};
     filtered.forEach(item => {
@@ -87,47 +78,45 @@ export default function LedgerHistoryView() {
     .reduce((acc, c) => acc + c.amount, 0);
 
   return (
-    <div className="px-4 py-2 pb-24 space-y-4">
-      {/* Header & Controls */}
-      <div className={`p-4 rounded-3xl border transition-all ${
-        isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-100 text-slate-900 shadow-sm'
-      }`}>
-        <div className="flex items-center justify-between mb-3">
+    <div className="px-4 py-2 pb-24 space-y-4 animate-fadeIn">
+      {/* Search & Filter Header */}
+      <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 text-white space-y-3">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold tracking-tight">Ledger Records</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {filtered.length} entries found
+            <h2 className="text-base font-extrabold tracking-tight">Ledger Records</h2>
+            <p className="text-xs text-slate-400">
+              {filtered.length} total entries found
             </p>
           </div>
           <button
             onClick={() => setActiveModal('exportExcel')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold text-xs hover:bg-emerald-100 transition"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/20 transition"
           >
             <FileSpreadsheet className="w-3.5 h-3.5" />
             <span>Excel Export</span>
           </button>
         </div>
 
-        {/* Search input */}
-        <div className="relative mb-3">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+        {/* Search */}
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by notes, platform, category, date..."
-            className="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-800 text-xs rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 transition text-slate-900 dark:text-white"
+            placeholder="Search by notes, date, category, CBE/Telebirr..."
+            className="w-full pl-9 pr-3 py-2 bg-slate-950 text-xs rounded-xl outline-none border border-slate-800 focus:border-emerald-500 text-white transition"
           />
         </div>
 
         {/* Filter Pills */}
-        <div className="grid grid-cols-3 gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl text-xs font-bold">
+        <div className="grid grid-cols-3 gap-1.5 bg-slate-950 p-1 rounded-2xl text-xs font-bold border border-slate-800">
           <button
             onClick={() => setFilterType('all')}
             className={`py-1.5 rounded-xl transition ${
               filterType === 'all'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-500'
+                ? 'bg-slate-800 text-white shadow-xs'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             All ({combined.length})
@@ -136,8 +125,8 @@ export default function LedgerHistoryView() {
             onClick={() => setFilterType('income')}
             className={`py-1.5 rounded-xl transition ${
               filterType === 'income'
-                ? 'bg-emerald-500 text-white shadow-xs'
-                : 'text-slate-500'
+                ? 'bg-emerald-500 text-slate-950 font-extrabold shadow-xs'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Income ({incomes.length})
@@ -146,114 +135,99 @@ export default function LedgerHistoryView() {
             onClick={() => setFilterType('expense')}
             className={`py-1.5 rounded-xl transition ${
               filterType === 'expense'
-                ? 'bg-rose-500 text-white shadow-xs'
-                : 'text-slate-500'
+                ? 'bg-rose-500 text-white font-extrabold shadow-xs'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Expense ({expenses.length})
           </button>
         </div>
 
-        {/* Filter summary preview */}
-        <div className="flex items-center justify-between text-xs mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        {/* Summary row */}
+        <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80">
           <div>
-            <span className="text-slate-400 text-[10px]">Income: </span>
-            <strong className="text-emerald-600 dark:text-emerald-400 font-mono-num">
+            <span className="text-slate-500 text-[10px]">Income: </span>
+            <strong className="text-emerald-400 font-mono-num">
               +{formatCurrency(totalFilteredIncome, currency)}
             </strong>
           </div>
           <div>
-            <span className="text-slate-400 text-[10px]">Expense: </span>
-            <strong className="text-rose-500 font-mono-num">
+            <span className="text-slate-500 text-[10px]">Expense: </span>
+            <strong className="text-rose-400 font-mono-num">
               -{formatCurrency(totalFilteredExpense, currency)}
             </strong>
           </div>
           <div>
-            <span className="text-slate-400 text-[10px]">Net: </span>
-            <strong className="text-slate-900 dark:text-white font-mono-num">
+            <span className="text-slate-500 text-[10px]">Net: </span>
+            <strong className="text-white font-mono-num">
               {formatCurrency(totalFilteredIncome - totalFilteredExpense, currency)}
             </strong>
           </div>
         </div>
       </div>
 
-      {/* Grouped Ledger Entries */}
+      {/* Grouped Entries */}
       {Object.keys(groupedByDate).length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
-          <p className="text-sm font-semibold">No records match your filter.</p>
-          <p className="text-xs mt-1">Try clearing your search query.</p>
+        <div className="text-center py-12 text-slate-500">
+          <p className="text-sm font-semibold">No records found.</p>
+          <p className="text-xs mt-1">Try clearing your search query or log new entries.</p>
         </div>
       ) : (
         Object.entries(groupedByDate).map(([dateStr, items]) => {
-          const dayIncome = items
-            .filter(i => i.type === 'income')
-            .reduce((acc, c) => acc + c.amount, 0);
-          const dayExpense = items
-            .filter(i => i.type === 'expense')
-            .reduce((acc, c) => acc + c.amount, 0);
+          const dayIncome = items.filter(i => i.type === 'income').reduce((acc, c) => acc + c.amount, 0);
+          const dayExpense = items.filter(i => i.type === 'expense').reduce((acc, c) => acc + c.amount, 0);
 
           return (
-            <div
-              key={dateStr}
-              className={`p-4 rounded-3xl border transition-all ${
-                isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-100 text-slate-900 shadow-sm'
-              }`}
-            >
-              {/* Date Header */}
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800 text-xs">
-                <span className="font-bold flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+            <div key={dateStr} className="p-4 rounded-3xl bg-slate-900 border border-slate-800 text-white space-y-2">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-xs">
+                <span className="font-bold flex items-center gap-1.5 text-slate-300">
+                  <Calendar className="w-3.5 h-3.5 text-slate-500" />
                   {dateStr}
                 </span>
-                <span className="text-[11px] font-mono-num font-semibold text-slate-500">
+                <span className="font-mono-num font-bold text-slate-400">
                   Net: {formatCurrency(dayIncome - dayExpense, currency)}
                 </span>
               </div>
 
-              {/* Items for this date */}
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="divide-y divide-slate-800/60">
                 {items.map(item => {
-                  const isIncome = item.type === 'income';
-                  const plat = isIncome ? (INCOME_PLATFORMS.find(p => p.id === item.platform)?.name || 'Income') : null;
-                  const cat = !isIncome ? (EXPENSE_CATEGORIES.find(c => c.id === item.category)?.name || 'Expense') : null;
+                  const isInc = item.type === 'income';
+                  const cat = !isInc ? (EXPENSE_CATEGORIES.find(c => c.id === item.category)?.name || 'Expense') : 'Yango Ride';
 
                   return (
                     <div
                       key={item.id}
                       onClick={() => openEditModal(item, item.type)}
-                      className="py-2.5 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 px-1 rounded-xl cursor-pointer transition"
+                      className="py-2.5 flex items-center justify-between hover:bg-slate-800/40 px-1 rounded-xl cursor-pointer transition"
                     >
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2.5">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                          isIncome ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60' : 'bg-rose-100 text-rose-600 dark:bg-rose-950/60'
+                          isInc ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'
                         }`}>
-                          {isIncome ? <ArrowUpRight className="w-4 h-4 stroke-[2.5]" /> : <ArrowDownRight className="w-4 h-4 stroke-[2.5]" />}
+                          {isInc ? <ArrowUpRight className="w-4 h-4 stroke-[2.5]" /> : <ArrowDownRight className="w-4 h-4 stroke-[2.5]" />}
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="text-xs font-bold">{isIncome ? plat : cat}</span>
-                            {item.notes && (
-                              <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
-                                - {item.notes}
+                            <span className="text-xs font-bold">{cat}</span>
+                            {!isInc && item.paymentMethod && (
+                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-800 text-emerald-300 border border-slate-700">
+                                {item.paymentMethod}
                               </span>
                             )}
                           </div>
                           <p className="text-[10px] text-slate-400 mt-0.5">
-                            {isIncome && item.trips ? `${item.trips} trips • ` : ''}
-                            {isIncome && item.hours ? `${item.hours} hrs • ` : ''}
-                            {!isIncome && item.paymentMethod ? `${item.paymentMethod} • ` : ''}
-                            {!isIncome && item.mileage ? `${item.mileage} mi` : ''}
+                            {isInc && item.trips ? `${item.trips} trips • ` : ''}
+                            {isInc && item.hours ? `${item.hours}h • ` : ''}
+                            {item.notes ? item.notes : ''}
                           </p>
                         </div>
                       </div>
 
                       <div className="text-right">
-                        <p className={`text-xs font-bold font-mono-num ${
-                          isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'
-                        }`}>
-                          {isIncome ? '+' : '-'}{formatCurrency(item.amount, currency)}
+                        <p className={`text-xs font-bold font-mono-num ${isInc ? 'text-emerald-400' : 'text-slate-200'}`}>
+                          {isInc ? '+' : '-'}{formatCurrency(item.amount, currency)}
                         </p>
-                        <span className="text-[9px] text-slate-400">Tap to edit</span>
+                        <span className="text-[9px] text-slate-500">Tap to edit</span>
                       </div>
                     </div>
                   );
