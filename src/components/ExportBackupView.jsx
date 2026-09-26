@@ -12,7 +12,9 @@ import {
   Upload, 
   RotateCcw, 
   CheckCircle2, 
-  FileCheck
+  Smartphone,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export default function ExportBackupView() {
@@ -29,6 +31,7 @@ export default function ExportBackupView() {
 
   const [selectedRange, setSelectedRange] = useState('all');
   const [exportStatus, setExportStatus] = useState(null);
+  const [showDeployGuide, setShowDeployGuide] = useState(false);
 
   const getFilteredData = () => {
     const now = new Date();
@@ -92,7 +95,7 @@ export default function ExportBackupView() {
         periodName: rangeLabel,
       });
 
-      const filename = `Yango_Driver_Ledger_${rangeLabel.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const filename = `Yango_Driver_Ledger_v1.4_${rangeLabel.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.xlsx`;
       downloadExcelFile(wb, filename);
 
       confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
@@ -115,7 +118,7 @@ export default function ExportBackupView() {
         periodName: rangeLabel,
       });
 
-      const filename = `Yango_Driver_Backup_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const filename = `Yango_Driver_Backup_v1.4_${new Date().toISOString().slice(0, 10)}.xlsx`;
       await shareExcelFile(wb, filename);
 
       setExportStatus('Share sheet opened!');
@@ -128,8 +131,8 @@ export default function ExportBackupView() {
 
   const handleDownloadJSON = () => {
     const backupData = {
-      app: 'Yango Driver Ledger',
-      version: '1.2',
+      app: 'Driver Ledger Pro',
+      version: '1.4',
       exportDate: new Date().toISOString(),
       currency,
       targets,
@@ -140,7 +143,7 @@ export default function ExportBackupView() {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
     const dlAnchor = document.createElement('a');
     dlAnchor.setAttribute('href', dataStr);
-    dlAnchor.setAttribute('download', `yango_ledger_backup_${new Date().toISOString().slice(0, 10)}.json`);
+    dlAnchor.setAttribute('download', `driver_ledger_backup_v1.4_${new Date().toISOString().slice(0, 10)}.json`);
     dlAnchor.click();
 
     setExportStatus('Full database backup file downloaded!');
@@ -265,12 +268,12 @@ export default function ExportBackupView() {
 
         {/* 4 Sheets Breakdown explanation */}
         <div className="p-3 bg-slate-950/70 rounded-2xl border border-slate-800/60 text-[11px] text-slate-400 space-y-1">
-          <p className="font-bold text-slate-300">Generated Excel Workbook includes 4 sheets:</p>
+          <p className="font-bold text-slate-300">Generated Excel Workbook (v1.4) includes 4 sheets:</p>
           <ul className="list-disc list-inside space-y-0.5">
             <li><strong>Sheet 1:</strong> Executive Summary & Target Comparison (Daily, Weekly, Monthly)</li>
             <li><strong>Sheet 2:</strong> Daily Ledger with Target Met/Missed status</li>
             <li><strong>Sheet 3:</strong> Yango Ride details (Gross, Tips, Quests, Hours, Trips)</li>
-            <li><strong>Sheet 4:</strong> Categorized expenses with CBE/Telebirr/Cash payment method</li>
+            <li><strong>Sheet 4:</strong> Categorized expenses with CBE / Telebirr / Cash payment methods</li>
           </ul>
         </div>
 
@@ -292,6 +295,44 @@ export default function ExportBackupView() {
             <span>Share via Android Tray (WhatsApp, Drive, Email)</span>
           </button>
         </div>
+      </div>
+
+      {/* HOW TO DEPLOY TO YOUR ANDROID PHONE GUIDE */}
+      <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 text-white space-y-2">
+        <button
+          onClick={() => setShowDeployGuide(!showDeployGuide)}
+          className="w-full flex items-center justify-between text-left cursor-pointer"
+        >
+          <div className="flex items-center space-x-2">
+            <Smartphone className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              How to Deploy & Install on Android Phone
+            </h3>
+          </div>
+          {showDeployGuide ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+        </button>
+
+        {showDeployGuide && (
+          <div className="pt-2 text-xs text-slate-300 space-y-2.5 border-t border-slate-800 animate-fadeIn">
+            <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+              <p className="font-bold text-emerald-400 mb-1">Option 1: 1-Tap Direct Install (Easiest)</p>
+              <p className="text-[11px] text-slate-400">
+                1. Open the preview URL on Chrome on your phone.<br/>
+                2. Tap Chrome's menu (<strong>⋮</strong>) and tap <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong>.<br/>
+                3. The app installs immediately with native fullscreen offline capability.
+              </p>
+            </div>
+
+            <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800">
+              <p className="font-bold text-amber-400 mb-1">Option 2: Native APK Build (.apk)</p>
+              <p className="text-[11px] text-slate-400">
+                1. Clone the repo and run: <code>cd android && ./gradlew assembleDebug</code><br/>
+                2. Your installable APK is created at: <code>android/app/build/outputs/apk/debug/app-debug.apk</code>.<br/>
+                3. Send to phone via WhatsApp or Drive and tap <strong>Install</strong>.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Database Backup & Reset */}
