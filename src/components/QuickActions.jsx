@@ -4,9 +4,7 @@ import {
   Plus, 
   Minus, 
   FileSpreadsheet, 
-  Target,
-  Download,
-  Share2
+  Target 
 } from 'lucide-react';
 
 export default function QuickActions() {
@@ -24,8 +22,8 @@ export default function QuickActions() {
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
             <Plus className="w-5 h-5 stroke-[2.5]" />
           </div>
-          <span className="text-[11px] font-bold text-center leading-tight">Income</span>
-          <span className="text-[9px] text-emerald-100 opacity-80">+ Earnings</span>
+          <span className="text-[11px] font-bold text-center leading-tight">Yango</span>
+          <span className="text-[9px] text-emerald-100 opacity-80">+ Income</span>
         </button>
 
         {/* - Add Expense */}
@@ -53,7 +51,7 @@ export default function QuickActions() {
             <Target className="w-5 h-5 stroke-[2.2]" />
           </div>
           <span className="text-[11px] font-bold text-center leading-tight">Plan</span>
-          <span className="text-[9px] text-slate-400">Targets</span>
+          <span className="text-[9px] text-slate-400">Milestones</span>
         </button>
 
         {/* Export Excel (.xlsx) */}
@@ -69,7 +67,7 @@ export default function QuickActions() {
             <FileSpreadsheet className="w-5 h-5 stroke-[2.2]" />
           </div>
           <span className="text-[11px] font-bold text-center leading-tight">Excel</span>
-          <span className="text-[9px] text-slate-400">Backup</span>
+          <span className="text-[9px] text-slate-400">ETB Backup</span>
         </button>
       </div>
     </div>

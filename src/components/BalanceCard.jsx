@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext';
-import { formatCurrency } from '../utils/calculator';
+import { formatCurrency } from '../utils/calculator.js';
 import { 
   ArrowUpRight, 
   ArrowDownRight, 
@@ -47,14 +47,14 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
 
         {/* Top Segmented Controls: Today | Week | Month */}
         <div className="relative z-10 flex items-center justify-between mb-4">
-          <span className="text-xs font-medium text-emerald-100/90 uppercase tracking-wider">
-            {activePeriod === 'today' ? "Today's Ledger" : activePeriod === 'week' ? "This Week's Ledger" : "This Month's Ledger"}
+          <span className="text-xs font-semibold text-emerald-100/90 uppercase tracking-wider">
+            {activePeriod === 'today' ? "Today's Yango Shift" : activePeriod === 'week' ? "This Week's Plan" : "This Month's Plan"}
           </span>
 
           <div className="flex bg-black/25 backdrop-blur-md p-1 rounded-2xl border border-white/10">
             <button
               onClick={() => setActivePeriod('today')}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                 activePeriod === 'today'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-white/80 hover:text-white'
@@ -64,7 +64,7 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
             </button>
             <button
               onClick={() => setActivePeriod('week')}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                 activePeriod === 'week'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-white/80 hover:text-white'
@@ -74,7 +74,7 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
             </button>
             <button
               onClick={() => setActivePeriod('month')}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                 activePeriod === 'month'
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-white/80 hover:text-white'
@@ -85,7 +85,7 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
           </div>
         </div>
 
-        {/* Net Profit Display */}
+        {/* Net Profit Display in ETB */}
         <div className="relative z-10 mb-4">
           <p className="text-xs text-emerald-100/80 font-medium mb-0.5">Net Take-Home Earnings</p>
           <div className="flex items-baseline space-x-2">
@@ -100,12 +100,12 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
             }`}>
               {isAhead ? (
                 <>
-                  <CheckCircle2 className="w-3 h-3" />
+                  <CheckCircle2 className="w-3 h-3 text-emerald-300" />
                   Target Met
                 </>
               ) : (
                 <>
-                  <AlertCircle className="w-3 h-3" />
+                  <AlertCircle className="w-3 h-3 text-amber-300" />
                   {formatCurrency(Math.abs(diff), currency)} to Goal
                 </>
               )}
@@ -121,7 +121,7 @@ export default function BalanceCard({ activePeriod, setActivePeriod }) {
               <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div className="overflow-hidden">
-              <p className="text-[11px] text-white/70 font-medium truncate">Gross Income</p>
+              <p className="text-[11px] text-white/70 font-medium truncate">Yango Gross</p>
               <p className="text-sm sm:text-base font-bold text-white font-mono-num truncate">
                 {formatCurrency(incomeValue, currency)}
               </p>

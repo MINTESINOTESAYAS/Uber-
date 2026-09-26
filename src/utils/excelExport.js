@@ -16,10 +16,10 @@ export function generateExcelWorkbook({
   // SHEET 1: EXECUTIVE SUMMARY & TARGET COMPARISON
   // ----------------------------------------------------
   const summaryData = [
-    ['YANGO DRIVER INCOME, EXPENSE & TARGET PLAN REPORT (v1.2)'],
+    ['YANGO DRIVER INCOME, EXPENSE & TARGET PLAN REPORT (v1.3)'],
     [`Generated: ${new Date().toLocaleString()}`],
     [`Currency: Ethiopian Birr (ETB / Br)`],
-    [`Service: Yango Ride`],
+    [`Service Platform: Yango Ride Only`],
     [`Reporting Period: ${periodName}`],
     [],
     ['1. TARGET VS ACTUAL COMPARISON'],
@@ -178,7 +178,7 @@ export function generateExcelWorkbook({
   // SHEET 4: EXPENSE LOG DETAILS
   // ----------------------------------------------------
   const expenseRows = [
-    ['Entry ID', 'Date', 'Category', 'Amount (ETB)', 'Payment Method (CBE/Telebirr/Cash)', 'Mileage / Odometer', 'Receipt Notes']
+    ['Entry ID', 'Date', 'Category', 'Amount (ETB)', 'Payment Method (CBE / Telebirr / Cash)', 'Mileage / Odometer', 'Receipt Notes']
   ];
 
   expenses.sort((a, b) => b.date.localeCompare(a.date)).forEach(exp => {
@@ -199,7 +199,7 @@ export function generateExcelWorkbook({
     { wch: 14 },
     { wch: 24 },
     { wch: 16 },
-    { wch: 32 },
+    { wch: 34 },
     { wch: 20 },
     { wch: 36 }
   ];
@@ -208,11 +208,11 @@ export function generateExcelWorkbook({
   return wb;
 }
 
-export function downloadExcelFile(wb, filename = `Yango_Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export function downloadExcelFile(wb, filename = `Yango_Driver_Ledger_v1.3_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   XLSX.writeFile(wb, filename);
 }
 
-export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_v1.3_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   try {
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
     try {
@@ -223,14 +223,13 @@ export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_${new D
       });
 
       await Share.share({
-        title: 'Yango Driver Ledger Backup',
+        title: 'Yango Driver Ledger v1.3 Backup',
         text: 'Daily income, expenses, and target plan performance report in ETB.',
         url: saved.uri,
         dialogTitle: 'Share Yango Driver Excel Sheet',
       });
       return { success: true };
     } catch {
-      const blob = new Blob([s2ab(atob(wbout))], { type: 'application/octet-stream' });
       downloadExcelFile(wb, filename);
       return { success: true, method: 'download' };
     }
@@ -239,11 +238,4 @@ export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_${new D
     downloadExcelFile(wb, filename);
     return { success: true, method: 'fallback_download' };
   }
-}
-
-function s2ab(s) {
-  const buf = new ArrayBuffer(s.length);
-  const view = new Uint8Array(buf);
-  for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
-  return buf;
 }
