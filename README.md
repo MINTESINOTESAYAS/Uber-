@@ -1,64 +1,52 @@
-# Yango Driver Ledger Pro (Version 1.2 & 1.1)
+# Yango Driver Ledger Pro (Version 1.3)
 
-A professional Android application specifically engineered for **Yango drivers in Ethiopia**, tracking daily income and operating expenses compared against daily, weekly, and monthly targets — with direct multi-sheet **Excel (.xlsx)** backup and export.
+A professional Android application built using the **Fam Fund App** mobile UI template, tailored specifically for **Yango drivers in Ethiopia** to track daily income and vehicle operating expenses against planned **Daily, Weekly, and Monthly** targets — with multi-sheet **Excel (.xlsx)** backup and export.
 
 ---
 
-## 🏎️ What's New in Version 1.2 (Active Edition)
+## 🌟 Version 1.3 Improvements
 
-1. **Car Speedometer Target Cockpit Gauge:**
-   - Features an instrument-style circular tachometer / speedometer gauge right on the home screen.
-   - Shows real-time Actual Income vs. Planned Target with a dynamic needle, 0–100% target ticks, and neon glow progress arc.
-   - Seamless toggles for **Daily**, **Weekly**, and **Monthly** targets directly on the gauge.
-
-2. **Ultra-Simplistic Home UI:**
-   - Streamlined cockpit: Speedometer dial, today's expenses, today's net profit, and two big tactile buttons (`+ Log Income` and `- Log Expense`).
-   - Clean, uncluttered layout: Deep analytics, target breakdowns, and 7-day charts are neatly organized into a dedicated **"Detailed Driver Hub"** sub-screen so the home dashboard stays clean and fast.
-
-3. **Strict Ethiopian Birr (ETB) & Yango Ride Focus:**
-   - All monetary figures are native **ETB (Br )**.
-   - Removed all irrelevant ride types and platforms; strictly optimized for **Yango Ride**.
-
-4. **Strict Payment Method Selection:**
-   - Expenses strictly limited to the 3 main driver payment methods in Ethiopia:
+1. **Payment Methods: CBE, Telebirr & Cash Choice Only**
+   - Vehicle expenses are strictly limited to the three standard Ethiopian driver payment choices:
      - **CBE** (Commercial Bank of Ethiopia / CBE Birr)
      - **Telebirr**
      - **Cash**
+   - All other payment methods (debit/credit card, foreign cards) have been removed.
 
-5. **Previous Days Income & Expense Logging:**
-   - Forgot to log earnings or fuel yesterday or earlier this week? One-tap buttons for **"Today"**, **"Yesterday"**, **"2 Days Ago"**, or **"Pick Any Past Date"** allow backfilling missed records seamlessly.
+2. **Native ETB Currency & Yango Ride Only**
+   - All monetary calculations and displays are strictly formatted in **Ethiopian Birr (`Br ` / `ETB`)**.
+   - Platform is strictly set to **Yango Ride** (gross fares, tips, and quest bonuses). Foreign platforms and currencies have been completely removed.
 
-6. **Version Management (v1.1 & v1.2):**
-   - Both **Version 1.1** (initial Fam Fund card style) and **Version 1.2** (car speedometer gauge cockpit) are fully preserved in the app. Tap the `v1.2` badge in the header to switch between editions.
+3. **Multi-Sheet Excel Sheet (.xlsx) Backup in ETB**
+   - Generates formatted, multi-worksheet `.xlsx` workbooks:
+     - **Sheet 1: Executive Summary** (Period targets, actual achievements, variances (+/−), achievement %, and operating expense ratios in ETB).
+     - **Sheet 2: Daily Ledger** (Day-by-day table showing Target Met `TARGET MET ✅` vs `BELOW TARGET` status).
+     - **Sheet 3: Income Log** (Yango Ride gross fares, tips, quest bonuses, trips, hours, and notes in ETB).
+     - **Sheet 4: Expense Log** (Categorized expenses, vehicle mileage, and strictly **CBE / Telebirr / Cash** payment methods).
+   - Direct Android Share Tray integration (WhatsApp, Google Drive, Email, Local storage).
+
+4. **Fam Fund UI Template Structure**
+   - Restored the signature **Fam Fund Hero Balance Card** with smooth gradients and quick `[Today] | [Week] | [Month]` toggles.
+   - Restored the **Plan Performance Card** with progress bars, dynamic weekly pace rebalancing, and daily/weekly/monthly milestone splits.
+   - Quick tactile actions: `+ Yango Income`, `- Expense`, `Plan Milestones`, `Excel Backup`.
+   - Chronological recent activity feed with quick tap-to-edit.
+   - Previous days logging capability preserved (record yesterday's or past dates' trips easily).
 
 ---
 
-## 📊 Features & Modules
+## 📱 App Navigation Tabs
 
-### 1. Target & Plan Manager (Daily, Weekly, Monthly)
-- Set monthly income goal (e.g. Br 95,000/month) and operating expense ceiling.
-- Configure working days per week (e.g. 6 days Mon–Sat).
-- **Automated Breakdown:**
-  - Standard Daily Target = `Weekly Goal / Working Days Count`
-  - Standard Weekly Target = `Monthly Goal / 4.333`
-  - Daily Expense Limit = `Monthly Budget / 30`
-- **Smart Weekly Pace Rebalancer:** Automatically calculates how much Birr you need to average on your remaining working days this week to still achieve your weekly milestone.
-- **7-Day Bar Chart:** Compare Mon–Sun daily revenue against the target milestone line.
-
-### 2. Multi-Sheet Excel (.xlsx) Backup & Export
-- Generates professional `.xlsx` workbooks:
-  1. **Executive Summary:** Target vs Actual for Daily, Weekly, and Monthly in ETB, plus variance and achievement rates.
-  2. **Daily Ledger:** Day-by-day record with target variance and status badges (`TARGET MET ✅` vs `BELOW TARGET`).
-  3. **Income Log:** Yango gross fares, tips, quest bonuses, trips, hours, and notes in ETB.
-  4. **Expense Log:** Categorized expenses with **CBE / Telebirr / Cash** payment methods and vehicle mileage.
-- **Android Share Integration:** Direct hook into the Android system share sheet (WhatsApp, Google Drive, Email, Local storage).
+- **Home:** Fam Fund Hero Card, Target Plan Progress, Quick Actions, and Recent Activity.
+- **Plan:** Deep analytics, 7-day Mon–Sun milestone comparison chart, and expense category distributions.
+- **Ledger:** Searchable, filterable transaction records with search by date, notes, or CBE/Telebirr/Cash payment method.
+- **Excel:** One-tap Excel workbook (.xlsx) generator and offline JSON database backup.
 
 ---
 
 ## 🚀 Running the Project
 
 ```bash
-# Start Vite development server
+# Start Vite live development server (0.0.0.0:5173)
 npm run dev
 
 # Build production bundle
