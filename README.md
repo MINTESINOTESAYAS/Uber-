@@ -1,43 +1,45 @@
-# Yango Driver Ledger Pro (Version 1.3)
+# Driver Ledger Pro (Version 1.4 Final)
 
-A professional Android application built using the **Fam Fund App** mobile UI template, tailored specifically for **Yango drivers in Ethiopia** to track daily income and vehicle operating expenses against planned **Daily, Weekly, and Monthly** targets — with multi-sheet **Excel (.xlsx)** backup and export.
+A professional Android application built for **Yango drivers in Ethiopia**, tracking daily income and operating expenses compared against planned **Daily, Weekly, and Monthly** targets — with multi-sheet **Excel (.xlsx)** backup and export.
 
 ---
 
-## 🌟 Version 1.3 Improvements
+## 🏎️ What's New in Version 1.4 (Final Polished Release)
 
-1. **Payment Methods: CBE, Telebirr & Cash Choice Only**
-   - Vehicle expenses are strictly limited to the three standard Ethiopian driver payment choices:
-     - **CBE** (Commercial Bank of Ethiopia / CBE Birr)
-     - **Telebirr**
-     - **Cash**
-   - All other payment methods (debit/credit card, foreign cards) have been removed.
+1. **Official Brand Logo Integration:**
+   - **App Opening Splash Screen:** Upon launching the app, a luxury opening screen appears featuring the aerodynamic sports car and golden road ledger brand logo with glowing ambient effects, version `v1.4`, and animated loading bar.
+   - **Top-Left Side Brand Header:** The official Driver Ledger logo is displayed on the top-left corner of the header. Tapping it re-opens the opening splash screen anytime.
+   - Distinctive typography: **Driver** in clean white and **Ledger** in warm gold gradient.
 
-2. **Native ETB Currency & Yango Ride Only**
-   - All monetary calculations and displays are strictly formatted in **Ethiopian Birr (`Br ` / `ETB`)**.
-   - Platform is strictly set to **Yango Ride** (gross fares, tips, and quest bonuses). Foreign platforms and currencies have been completely removed.
+2. **Fam Fund UI Architecture:**
+   - **Hero Balance Card:** Dynamic period switcher (`[Today] | [Week] | [Month]`), displaying net take-home earnings in ETB, gross fare pill, and expense pill.
+   - **Plan Performance Card:** Real-time target tracking progress bar, variance (+/−), and the **Smart Weekly Pace Rebalancer**.
+   - **Tactile Quick Actions:** `+ Yango Income`, `- Expense`, `Plan Milestones`, and `Excel Backup`.
+   - **Recent Activity Feed:** Chronological feed with quick tap-to-edit.
 
-3. **Multi-Sheet Excel Sheet (.xlsx) Backup in ETB**
+3. **Strict Ethiopian Driver Parameters:**
+   - **Native ETB Currency Only:** All earnings, expenses, milestones, and reports are formatted in **Ethiopian Birr (`Br ` / `ETB`)**.
+   - **Yango Ride Platform Only:** Formatted for Yango Ride base fares, customer tips, and quest bonuses.
+   - **Strict Payment Methods:** Vehicle expenses are strictly restricted to:
+     1. **CBE** (Commercial Bank of Ethiopia / CBE Birr)
+     2. **Telebirr**
+     3. **Cash**
+   - **Previous Days Logging:** Quick 1-tap buttons for `Today`, `Yesterday`, `2 Days Ago`, or any past calendar date to backfill missed records.
+
+4. **Multi-Sheet Excel Sheet (.xlsx) Backup in ETB:**
    - Generates formatted, multi-worksheet `.xlsx` workbooks:
-     - **Sheet 1: Executive Summary** (Period targets, actual achievements, variances (+/−), achievement %, and operating expense ratios in ETB).
-     - **Sheet 2: Daily Ledger** (Day-by-day table showing Target Met `TARGET MET ✅` vs `BELOW TARGET` status).
-     - **Sheet 3: Income Log** (Yango Ride gross fares, tips, quest bonuses, trips, hours, and notes in ETB).
+     - **Sheet 1: Executive Summary** (Targets, actuals, variances, net profit, total trips, hours).
+     - **Sheet 2: Daily Ledger** (Day-by-day record with `TARGET MET ✅` vs `BELOW TARGET` status).
+     - **Sheet 3: Income Log** (Yango Ride gross fares, tips, bonuses, trips, hours, notes).
      - **Sheet 4: Expense Log** (Categorized expenses, vehicle mileage, and strictly **CBE / Telebirr / Cash** payment methods).
-   - Direct Android Share Tray integration (WhatsApp, Google Drive, Email, Local storage).
-
-4. **Fam Fund UI Template Structure**
-   - Restored the signature **Fam Fund Hero Balance Card** with smooth gradients and quick `[Today] | [Week] | [Month]` toggles.
-   - Restored the **Plan Performance Card** with progress bars, dynamic weekly pace rebalancing, and daily/weekly/monthly milestone splits.
-   - Quick tactile actions: `+ Yango Income`, `- Expense`, `Plan Milestones`, `Excel Backup`.
-   - Chronological recent activity feed with quick tap-to-edit.
-   - Previous days logging capability preserved (record yesterday's or past dates' trips easily).
+   - Direct hook to the Android Share Tray (WhatsApp, Google Drive, Gmail, Local storage).
 
 ---
 
-## 📱 App Navigation Tabs
+## 📱 Navigation Tabs
 
 - **Home:** Fam Fund Hero Card, Target Plan Progress, Quick Actions, and Recent Activity.
-- **Plan:** Deep analytics, 7-day Mon–Sun milestone comparison chart, and expense category distributions.
+- **Plan:** Deep analytics, 7-day Mon–Sun milestone comparison chart, and expense category distributions in ETB.
 - **Ledger:** Searchable, filterable transaction records with search by date, notes, or CBE/Telebirr/Cash payment method.
 - **Excel:** One-tap Excel workbook (.xlsx) generator and offline JSON database backup.
 
@@ -46,7 +48,7 @@ A professional Android application built using the **Fam Fund App** mobile UI te
 ## 🚀 Running the Project
 
 ```bash
-# Start Vite live development server (0.0.0.0:5173)
+# Start Vite development server (bound to 0.0.0.0:5173)
 npm run dev
 
 # Build production bundle
