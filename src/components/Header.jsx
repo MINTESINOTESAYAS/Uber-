@@ -1,15 +1,15 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { formatCurrency } from '../utils/calculator.js';
+import DriverLedgerLogo from './DriverLedgerLogo';
 import { 
   Sparkles, 
   Smartphone, 
   Maximize2, 
-  Sliders, 
-  Car
+  Sliders 
 } from 'lucide-react';
 
-export default function Header() {
+export default function Header({ onReopenSplash }) {
   const { 
     targets, 
     currency, 
@@ -22,36 +22,44 @@ export default function Header() {
   const isDark = theme === 'dark' || theme === 'noir';
 
   return (
-    <header className={`px-4 pt-4 pb-3 transition-colors ${
+    <header className={`px-4 pt-3.5 pb-3 transition-colors ${
       isDark ? 'bg-slate-900 border-b border-slate-800 text-white' : 'bg-white border-b border-slate-100 text-slate-900'
     }`}>
-      {/* Top row: Brand & Tool controls */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2.5">
-          {/* Driver Avatar */}
-          <div className="relative">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-black shadow-md shadow-emerald-500/20">
-              <Car className="w-5 h-5 stroke-[2.5]" />
-            </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full"></div>
-          </div>
+        {/* Left top side: Official Driver Ledger Logo */}
+        <div 
+          onClick={onReopenSplash}
+          className="flex items-center space-x-2.5 cursor-pointer group select-none"
+          title="Click to view Driver Ledger Opening Screen"
+        >
+          {/* Driver Ledger Logo Mark */}
+          <DriverLedgerLogo 
+            className="w-10 h-10 group-hover:scale-105 transition-transform" 
+            variant="icon"
+          />
+
           <div>
             <div className="flex items-center space-x-1.5">
-              <h1 className="font-bold text-base leading-tight">Yango Driver</h1>
-              {/* Version 1.3 Badge */}
-              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 rounded-full border border-emerald-300/40">
-                v1.3
+              <span className="font-black text-base tracking-tight leading-tight flex items-center">
+                <span className="text-white">Driver</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-500 ml-1">
+                  Ledger
+                </span>
+              </span>
+              {/* Version 1.4 Badge */}
+              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">
+                v1.4
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Goal: <strong className="font-mono-num text-slate-700 dark:text-slate-200">{formatCurrency(targets.monthlyIncome, currency)}</strong>/mo
+            <p className="text-[11px] text-slate-400">
+              Yango ETB Goal: <strong className="font-mono-num text-slate-200">{formatCurrency(targets.monthlyIncome, currency)}</strong>
             </p>
           </div>
         </div>
 
         {/* Right utility buttons */}
         <div className="flex items-center space-x-1.5">
-          {/* Fam Fund Figma Template Badge */}
+          {/* Fam Fund UI Badge */}
           <button
             onClick={() => setActiveModal('figmaSync')}
             title="Fam Fund Figma Template Settings"
@@ -64,7 +72,7 @@ export default function Header() {
           {/* Target Config Quick Button */}
           <button
             onClick={() => setActiveModal('targetSettings')}
-            title="Edit Daily/Weekly/Monthly Plan"
+            title="Edit Daily/Weekly/Monthly Target Plan"
             className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition"
           >
             <Sliders className="w-4 h-4 text-emerald-500" />

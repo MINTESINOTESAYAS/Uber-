@@ -9,6 +9,7 @@ import AnalyticsView from './components/AnalyticsView';
 import LedgerHistoryView from './components/LedgerHistoryView';
 import ExportBackupView from './components/ExportBackupView';
 import BottomNav from './components/BottomNav';
+import AppSplashScreen from './components/AppSplashScreen';
 
 // Modals
 import AddIncomeModal from './components/AddIncomeModal';
@@ -21,13 +22,24 @@ function MainApp() {
   const { activeTab, activeModal, theme, viewMode, setActiveModal } = useApp();
   const [activePeriod, setActivePeriod] = useState('today'); // 'today', 'week', 'month'
 
+  // App Opening Splash Screen state
+  const [showSplash, setShowSplash] = useState(() => {
+    // Show splash once on initial load
+    return true;
+  });
+
   const isDark = theme === 'dark' || theme === 'noir';
 
   return (
     <div className={`min-h-screen transition-colors ${
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'
     }`}>
-      {/* Shell Container: On desktop, presents in a sleek mobile frame */}
+      {/* App Opening Splash Screen */}
+      {showSplash && (
+        <AppSplashScreen onFinish={() => setShowSplash(false)} />
+      )}
+
+      {/* Shell Container */}
       <div className={`mx-auto transition-all ${
         viewMode === 'mobile'
           ? 'max-w-md min-h-screen shadow-2xl relative border-x border-slate-200/50 dark:border-slate-800'
@@ -35,20 +47,20 @@ function MainApp() {
       } ${isDark ? 'bg-slate-950' : 'bg-slate-50'}`}>
 
         {/* Android Simulated Status Bar */}
-        <div className={`px-6 pt-2 pb-1 flex justify-between items-center text-[11px] font-semibold tracking-tight transition-colors ${
+        <div className={`px-6 pt-2 pb-1 flex justify-between items-center text-[11px] font-semibold tracking-tight transition-colors select-none ${
           isDark ? 'bg-slate-900 text-slate-300' : 'bg-white text-slate-600'
         }`}>
           <span>9:41</span>
           <div className="flex items-center space-x-1.5">
-            <span className="text-[10px] font-bold text-emerald-500">YANGO 5G</span>
+            <span className="text-[10px] font-bold text-amber-400">YANGO 5G</span>
             <div className="w-5 h-2.5 border border-current rounded-xs p-0.5 flex items-center">
-              <div className="h-full w-4/5 bg-emerald-500 rounded-2xs"></div>
+              <div className="h-full w-4/5 bg-amber-400 rounded-2xs"></div>
             </div>
           </div>
         </div>
 
-        {/* App Header with Version 1.3 badge */}
-        <Header />
+        {/* App Header with Logo on Left Top Side */}
+        <Header onReopenSplash={() => setShowSplash(true)} />
 
         {/* Dynamic Screen Content */}
         <main className="pb-16 animate-fadeIn">

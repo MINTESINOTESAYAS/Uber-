@@ -16,7 +16,7 @@ export function generateExcelWorkbook({
   // SHEET 1: EXECUTIVE SUMMARY & TARGET COMPARISON
   // ----------------------------------------------------
   const summaryData = [
-    ['YANGO DRIVER INCOME, EXPENSE & TARGET PLAN REPORT (v1.3)'],
+    ['YANGO DRIVER INCOME, EXPENSE & TARGET PLAN REPORT (v1.4)'],
     [`Generated: ${new Date().toLocaleString()}`],
     [`Currency: Ethiopian Birr (ETB / Br)`],
     [`Service Platform: Yango Ride Only`],
@@ -208,11 +208,11 @@ export function generateExcelWorkbook({
   return wb;
 }
 
-export function downloadExcelFile(wb, filename = `Yango_Driver_Ledger_v1.3_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export function downloadExcelFile(wb, filename = `Yango_Driver_Ledger_v1.4_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   XLSX.writeFile(wb, filename);
 }
 
-export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_v1.3_${new Date().toISOString().slice(0, 10)}.xlsx`) {
+export async function shareExcelFile(wb, filename = `Yango_Driver_Ledger_v1.4_${new Date().toISOString().slice(0, 10)}.xlsx`) {
   try {
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
     try {

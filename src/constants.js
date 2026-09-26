@@ -1,8 +1,8 @@
 // Constants - Driver Ledger v1.3 (Fam Fund Edition with Ethiopian Birr & Yango)
 
-export const APP_VERSION = '1.3';
-export const PREVIOUS_VERSION = '1.1';
-export const PREVIOUS_VERSIONS = ['1.1', '1.2'];
+export const APP_VERSION = '1.4';
+export const PREVIOUS_VERSION = '1.3';
+export const PREVIOUS_VERSIONS = ['1.1', '1.2', '1.3'];
 
 // Strict Single Currency: ETB (Ethiopian Birr)
 export const CURRENCY = {
